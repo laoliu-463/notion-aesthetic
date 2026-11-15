@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>时间 · Clock</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root { --gold: #d4af37; --gold-light: #f5e6a8; --gold-dim: #8a6d1f; --bg: #0a0a0c; }
+  html, body { height: 100%; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+    background:
+      radial-gradient(ellipse at 50% 115%, rgba(212,175,55,.20), transparent 62%),
+      radial-gradient(ellipse at 85% -10%, rgba(212,175,55,.08), transparent 55%),
+      var(--bg);
+    color: #ece7d8;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    user-select: none;
+  }
+  .tag {
+    font-size: 12px;
+    letter-spacing: .55em;
+    color: var(--gold-dim);
+    margin-bottom: 26px;
+    padding-left: .55em;
+  }
+  .clock {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(72px, 15vw, 180px);
+    font-weight: 300;
+    letter-spacing: .03em;
+    color: var(--gold-light);
+    text-shadow: 0 0 60px rgba(212,175,55,.4), 0 2px 14px rgba(0,0,0,.7);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+  .clock .sec { font-size: .38em; color: var(--gold); }
+  .date-line {
+    margin-top: 22px;
+    font-size: 15px;
+    letter-spacing: .28em;
+    color: #9a917d;
+  }
+  .greeting {
+    margin-top: 34px;
+    font-size: clamp(15px, 2vw, 19px);
+    letter-spacing: .2em;
+    color: var(--gold);
+  }
+</style>
+</head>
+<body>
+  <div class="tag">R I S E</div>
+  <div class="clock"><span id="hms">00:00</span><span class="sec" id="sec">:00</span></div>
+  <div class="date-line" id="dateLine"></div>
+  <div class="greeting" id="greeting"></div>
+<script>
+  const week = ['日','一','二','三','四','五','六'];
+  function tick(){
+    const n = new Date();
+    document.getElementById('hms').textContent =
+      String(n.getHours()).padStart(2,'0') + ':' + String(n.getMinutes()).padStart(2,'0');
+    document.getElementById('sec').textContent = ':' + String(n.getSeconds()).padStart(2,'0');
+    document.getElementById('dateLine').textContent =
+      n.getFullYear() + ' 年 ' + (n.getMonth()+1) + ' 月 ' + n.getDate() + ' 日 · 星期' + week[n.getDay()];
+    const h = n.getHours();
+    document.getElementById('greeting').textContent =
+      h < 5 ? '凌晨了，按时睡觉，明天继续逆袭' :
+      h < 9 ? '早上好，今天的第一步已经迈出' :
+      h < 12 ? '上午好，最难的部分往往在上午' :
+      h < 14 ? '中午好，吃饱了才有力气打硬仗' :
+      h < 18 ? '下午好，离翻盘又近了一点' :
+      h < 23 ? '晚上好，复盘今天，明天更强' : '夜深了，给自己一点奖励再睡';
+  }
+  tick(); setInterval(tick, 1000);
+</script>
+</body>
+</html>
