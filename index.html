@@ -33,22 +33,29 @@
     justify-content: center;
     overflow: hidden;
   }
-  .hero video {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    opacity: .55;
-  }
   .hero::before {
     content: "";
     position: absolute;
     inset: 0;
     background:
-      radial-gradient(ellipse at 50% 120%, rgba(212,175,55,.25), transparent 60%),
-      linear-gradient(to bottom, rgba(10,10,12,.55), rgba(10,10,12,.35) 45%, var(--bg) 96%);
+      radial-gradient(ellipse at 50% 120%, rgba(212,175,55,.22), transparent 60%),
+      radial-gradient(ellipse at 80% -10%, rgba(212,175,55,.10), transparent 55%),
+      linear-gradient(to bottom, rgba(10,10,12,.4), rgba(10,10,12,.55) 55%, var(--bg) 97%);
     z-index: 1;
+  }
+  #dust { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: .35;
+    animation: drift 16s ease-in-out infinite alternate;
+  }
+  .orb.a { width: 420px; height: 420px; left: -120px; top: 12%; background: rgba(212,175,55,.16); }
+  .orb.b { width: 340px; height: 340px; right: -100px; bottom: 8%; background: rgba(212,175,55,.12); animation-delay: -6s; }
+  @keyframes drift {
+    from { transform: translate(0,0) scale(1); }
+    to   { transform: translate(50px, -36px) scale(1.12); }
   }
   .hero-inner { position: relative; z-index: 2; text-align: center; padding: 0 24px; }
   .hero .tag {
@@ -124,46 +131,9 @@
   .sec-head p { color: var(--muted); font-size: 14px; max-width: 520px; line-height: 1.9; }
 
   /* ---------- CARDS ---------- */
-  .cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 22px;
-    margin-top: 46px;
-  }
-  .card {
-    position: relative;
-    border-radius: 18px;
-    overflow: hidden;
-    height: 320px;
-    background: var(--card);
-    border: 1px solid rgba(212,175,55,.14);
-    transition: transform .45s cubic-bezier(.2,.8,.2,1), border-color .3s, box-shadow .3s;
-    cursor: default;
-  }
-  .card:hover {
-    transform: translateY(-8px);
-    border-color: rgba(212,175,55,.55);
-    box-shadow: 0 24px 60px rgba(0,0,0,.55), 0 0 0 1px rgba(212,175,55,.12) inset;
-  }
-  .card img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    transition: transform .8s cubic-bezier(.2,.8,.2,1), filter .4s;
-    filter: saturate(.85) brightness(.8);
-  }
-  .card:hover img { transform: scale(1.07); filter: saturate(1.05) brightness(.95); }
-  .card .shade {
-    position: absolute; inset: 0;
-    background: linear-gradient(to top, rgba(5,5,8,.92) 8%, rgba(5,5,8,.15) 55%, transparent);
-  }
-  .card .label {
-    position: absolute;
-    left: 20px; bottom: 18px;
-    z-index: 2;
-  }
-  .card .label .num { font-size: 11px; color: var(--gold-dim); letter-spacing: .3em; }
-  .card .label h3 { font-size: 19px; letter-spacing: .12em; margin-top: 4px; }
-  .card .label p { font-size: 12px; color: var(--muted); margin-top: 4px; letter-spacing: .08em; }
+  .reveal { opacity: 0; transform: translateY(34px); transition: opacity .9s cubic-bezier(.2,.8,.2,1), transform .9s cubic-bezier(.2,.8,.2,1); }
+  .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } }
 
   /* ---------- DOUYIN FUEL ---------- */
   .fuel {
@@ -189,8 +159,13 @@
     display: block;
     transition: transform .8s cubic-bezier(.2,.8,.2,1), filter .4s;
     filter: saturate(.9) brightness(.88);
+    animation: kenburns 22s ease-in-out infinite alternate;
   }
-  .fuel-item:hover img { transform: scale(1.04); filter: saturate(1.05) brightness(1); }
+  @keyframes kenburns {
+    from { transform: scale(1.02) translate(0,0); }
+    to   { transform: scale(1.1) translate(-1.5%, -1%); }
+  }
+  .fuel-item:hover img { transform: scale(1.04); filter: saturate(1.05) brightness(1); animation-play-state: paused; }
   .fuel-item figcaption {
     position: absolute;
     left: 0; right: 0; bottom: 0;
@@ -308,9 +283,9 @@
 
 <!-- ============ HERO ============ -->
 <div class="hero">
-  <video autoplay muted loop playsinline poster="assets/photo-963071.jpg">
-    <source src="assets/gold-glitter.mp4" type="video/mp4">
-  </video>
+  <canvas id="dust"></canvas>
+  <div class="orb a"></div>
+  <div class="orb b"></div>
   <div class="hero-inner">
     <div class="tag">RISE · 逆 袭</div>
     <div class="clock"><span id="hms">00:00</span><span class="sec" id="sec">:00</span></div>
@@ -321,39 +296,8 @@
   <div class="scroll-hint">向 下 滚 动</div>
 </div>
 
-<!-- ============ CARDS ============ -->
-<section>
-  <div class="sec-head">
-    <div class="sec-title">Gallery · 墨 金 画 廊</div>
-    <h2>把每一天，过成<em>主角</em>的样子</h2>
-    <p>暗色与金色是最克制的高级感。沉淀的日子，都会在某一天发光。</p>
-  </div>
-  <div class="cards">
-    <div class="card">
-      <img src="assets/photo-963071.jpg" alt="gold on black" loading="lazy">
-      <div class="shade"></div>
-      <div class="label"><div class="num">01</div><h3>暗 金</h3><p>克制，是最贵的装饰</p></div>
-    </div>
-    <div class="card">
-      <img src="assets/photo-6757595.jpg" alt="gold bokeh" loading="lazy">
-      <div class="shade"></div>
-      <div class="label"><div class="num">02</div><h3>光 斑</h3><p>所有光，都会找到你</p></div>
-    </div>
-    <div class="card">
-      <img src="assets/photo-6789777.jpg" alt="night lights" loading="lazy">
-      <div class="shade"></div>
-      <div class="label"><div class="num">03</div><h3>夜 色</h3><p>最深的夜，孕育最亮的你</p></div>
-    </div>
-    <div class="card">
-      <img src="assets/photo-6155167.jpg" alt="orange bokeh" loading="lazy">
-      <div class="shade"></div>
-      <div class="label"><div class="num">04</div><h3>余 温</h3><p>不熄的火，就是逆袭的开始</p></div>
-    </div>
-  </div>
-</section>
-
 <!-- ============ DOUYIN FUEL ============ -->
-<section>
+<section class="reveal">
   <div class="sec-head">
     <div class="sec-title">Fuel · 每 日 火 种</div>
     <h2>刷到的每一句狠话，<em>都是给自己的</em></h2>
@@ -378,7 +322,7 @@
 </section>
 
 <!-- ============ GOALS ============ -->
-<section>
+<section class="reveal">
   <div class="goals-wrap">
     <div>
       <div class="sec-head">
@@ -413,7 +357,7 @@
 </section>
 
 <!-- ============ MANTRA ============ -->
-<div class="mantra">
+<div class="mantra reveal">
   <h2>逆 袭 之 路</h2>
   <p>不 需 要 一 夜 暴 富 ， 只 要 每 天 都 比 昨 天 多 走 一 步</p>
 </div>
@@ -421,6 +365,38 @@
 <footer>DESIGNED FOR THE ONES WHO REFUSE TO STAY DOWN</footer>
 
 <script>
+  // 金色尘埃粒子
+  const cv = document.getElementById('dust');
+  const cx = cv.getContext('2d');
+  let W, H, parts = [];
+  function resize(){ W = cv.width = cv.offsetWidth; H = cv.height = cv.offsetHeight; }
+  resize(); addEventListener('resize', resize);
+  const N = Math.min(70, Math.floor(innerWidth / 18));
+  for(let i=0;i<N;i++) parts.push({
+    x: Math.random()*innerWidth, y: Math.random()*innerHeight,
+    r: Math.random()*1.8+0.4, s: Math.random()*0.35+0.08,
+    o: Math.random()*0.5+0.15, ph: Math.random()*Math.PI*2
+  });
+  (function loop(t){
+    cx.clearRect(0,0,W,H);
+    for(const p of parts){
+      p.y -= p.s; p.x += Math.sin(t/2400 + p.ph)*0.15;
+      if(p.y < -4){ p.y = H+4; p.x = Math.random()*W; }
+      const tw = p.o * (0.6 + 0.4*Math.sin(t/900 + p.ph));
+      cx.beginPath();
+      cx.arc(p.x % W, p.y, p.r, 0, 7);
+      cx.fillStyle = `rgba(212,175,55,${tw})`;
+      cx.fill();
+    }
+    requestAnimationFrame(loop);
+  })(0);
+
+  // 滚动淡入
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+  }), { threshold: .12 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
   const week = ['日','一','二','三','四','五','六'];
   function tick(){
     const n = new Date();
